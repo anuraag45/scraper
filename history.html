@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ScraperX - History</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>ScraperX History</h1>
+  <nav>
+    <a href="index.html">Home</a> |
+    <a href="history.html">History</a>
+  </nav>
+</header>
+
+<main>
+  <h2>Past Scrapes</h2>
+  <div id="historyList"></div>
+</main>
+
+<script src="script.js"></script>
+<script>
+async function loadHistory() {
+  const res = await fetch('/api/history');
+  const data = await res.json();
+  const div = document.getElementById('historyList');
+  div.innerHTML='';
+  (data.runs||[]).forEach(r=>{
+    const item = document.createElement('div');
+    item.innerHTML = `
+      <b>${r.url}</b> (${r.item_count} items) • ${r.time_ago} 
+      <button onclick="window.location='results.html?runId=${r.id}'">View</button>
+      <a href="/api/export/${r.id}?format=csv" target="_blank">CSV</a>
+      <button onclick="deleteRun(${r.id})">Delete</button>
+    `;
+    div.appendChild(item);
+  });
+}
+
+async function deleteRun(id) {
+  if(!confirm('Delete run '+id+'?')) return;
+  await fetch('/api/delete-runs', {method:'DELETE', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ids:[id]})});
+  loadHistory();
+}
+
+loadHistory();
+</script>
+</body>
+</html>

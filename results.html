@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ScraperX - Results</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>ScraperX Results</h1>
+  <nav>
+    <a href="index.html">Home</a> |
+    <a href="history.html">History</a>
+  </nav>
+</header>
+
+<main>
+  <h2>Results</h2>
+  <table border="1">
+    <thead>
+      <tr><th>Title</th><th>Price</th><th>Availability</th><th>Category</th></tr>
+    </thead>
+    <tbody id="resultsBody"></tbody>
+  </table>
+  <button id="exportBtn">Export CSV</button>
+</main>
+
+<script src="script.js"></script>
+<script>
+async function loadResults() {
+  const params = new URLSearchParams(window.location.search);
+  const runId = params.get('runId');
+  if (!runId) return alert('No run selected');
+
+  const res = await fetch(`/api/run/${runId}?page=1&per_page=100`);
+  const data = await res.json();
+  const tbody = document.getElementById('resultsBody');
+  tbody.innerHTML = '';
+  (data.items||[]).forEach(it=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${it.title}</td><td>${it.price||''}</td><td>${it.availability||''}</td><td>${it.category||''}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('exportBtn').onclick = ()=> {
+    window.open(`/api/export/${runId}?format=csv`, '_blank');
+  };
+}
+
+loadResults();
+</script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ScraperX — Admin Dashboard</title>
+
+  <!-- Minimal CSS reset + local stylesheet -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Chart.js via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- icons -->
+  <script src="https://unpkg.com/feather-icons"></script>
+
+</head>
+<body class="layout-light">
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">SX</div>
+        <div class="name">ScraperX</div>
+      </div>
+      <nav class="menu">
+        <button class="menu-item active" data-view="home"><i data-feather="home"></i><span>Home</span></button>
+        <button class="menu-item" data-view="results"><i data-feather="box"></i><span>Results</span></button>
+        <button class="menu-item" data-view="history"><i data-feather="clock"></i><span>History</span></button>
+        <button class="menu-item" data-view="settings"><i data-feather="settings"></i><span>Settings</span></button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="small muted">v1.0</div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <header class="topbar">
+        <div class="left">
+          <div class="search">
+            <input id="globalSearch" placeholder="Search runs or items..." />
+          </div>
+        </div>
+        <div class="right">
+          <label class="toggle">
+            <input id="themeToggle" type="checkbox" />
+            <span>Dark</span>
+          </label>
+          
+        </div>
+      </header>
+
+      <section class="content">
+        <!-- Home view -->
+        <div id="view-home" class="view active">
+          <h2>Scrape Control</h2>
+          <div class="card grid-3">
+            <div class="card-block">
+              <label>Site</label>
+              <select id="siteSelect">
+                <option value="https://books.toscrape.com/index.html">Books (books.toscrape.com)</option>
+                <option value="https://quotes.toscrape.com/">Quotes (quotes.toscrape.com)</option>
+                <option value="custom">Custom</option>
+              </select>
+
+              <label>URL</label>
+              <input id="urlInput" type="text" readonly />
+
+              <label>Pages</label>
+              <input id="pagesInput" type="number" min="1" value="1" />
+            </div>
+
+            <div class="card-block center">
+              <div class="big-actions">
+                <button id="startBtn" class="btn primary large">Start Scrape</button>
+                <button id="stopBtn" class="btn danger large" disabled>Stop</button>
+              </div>
+              <div class="progress" id="progressWrap" style="display:none;">
+                <div id="progressBar" class="progress-bar" style="width:0%"></div>
+              </div>
+              <div id="progressMsg" class="muted small">Idle</div>
+            </div>
+
+            <div class="card-block stats">
+              <div class="stat">
+                <div class="num" id="statRuns">0</div>
+                <div class="label">Total Runs</div>
+              </div>
+              <div class="stat">
+                <div class="num" id="statItems">0</div>
+                <div class="label">Total Items</div>
+              </div>
+              <div class="stat">
+                <div class="num" id="statLast">—</div>
+                <div class="label">Last Run</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Results view -->
+        <div id="view-results" class="view">
+          <div class="toolbar">
+            <div class="filters">
+              <input id="filterSearch" placeholder="Search title..." />
+              <input id="filterPriceMin" placeholder="Min price" type="number" />
+              <input id="filterPriceMax" placeholder="Max price" type="number" />
+              <select id="filterAvailability">
+                <option value="">All</option><option>In stock</option><option>Out of stock</option>
+              </select>
+              <select id="sortBy">
+                <option value="title">Title</option>
+                <option value="price_num">Price</option>
+                <option value="availability">Availability</option>
+              </select>
+              <select id="sortOrder"><option value="ASC">Asc</option><option value="DESC">Desc</option></select>
+            </div>
+            <div class="toolbar-actions">
+              <select id="perPage"><option value="10">10</option><option value="25" selected>25</option><option value="50">50</option></select>
+              <select id="exportFormat"><option value="csv">CSV</option><option value="xlsx">Excel</option><option value="pdf">PDF</option></select>
+              <button id="exportBtn" class="btn">Export</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <table class="results-table">
+              <thead><tr>
+                <th>Title</th><th>Price</th><th>Availability</th><th>Category</th>
+              </tr></thead>
+              <tbody id="resultsBody"></tbody>
+            </table>
+
+            <div class="pagination">
+              <button id="prevPage" class="btn small">Prev</button>
+              <div id="pageNumbers" class="page-numbers"></div>
+              <button id="nextPage" class="btn small">Next</button>
+              <div class="muted small">Showing <span id="showStart">0</span>-<span id="showEnd">0</span> of <span id="showTotal">0</span></div>
+            </div>
+          </div>
+
+          <div class="card grid-2">
+            <div>
+              <h4>Price distribution</h4>
+              <canvas id="priceChart" height="120"></canvas>
+            </div>
+            <div>
+              <h4>Availability</h4>
+              <canvas id="availChart" height="120"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- History view -->
+        <div id="view-history" class="view">
+          <div class="card">
+            <h3>Scrape History</h3>
+            <div id="historyList" class="history-list"></div>
+          </div>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toasts" class="toasts"></div>
+
+  <script src="script.js"></script>
+  <script>feather.replace()</script>
+</body>
+</html>
